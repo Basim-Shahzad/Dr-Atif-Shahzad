@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import Student from '/greenStudent.png'
-import UniLogo from '/unilogo.png'
-import { MdOutlineStarPurple500 } from "react-icons/md";
 import { HiMiniSparkles } from "react-icons/hi2";
-import Nantes from '/Nantes.png'
-import { motion, useAnimation } from "framer-motion";
-import { IoRefresh } from 'react-icons/io5';
+import { motion } from "framer-motion";
 import MainImg from '/online-learning.png'
 
 const MidContent = () => {

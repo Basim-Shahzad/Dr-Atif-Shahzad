@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom';
-import { useAuth } from '../AuthComponents/AuthContext'
+import { useAuth } from '../../hooks/useAuth';
+import { useApi } from '../../hooks/useApi';
 
 const Courses = () => {
     const [courses, setCourses] = useState([])
     const [error, setError] = useState()
-    const { api, fetchCurrentUser, user } = useAuth()
+    let api = useApi();
+    const { fetchCurrentUser, user } = useAuth()
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {

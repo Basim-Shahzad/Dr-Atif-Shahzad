@@ -1,11 +1,11 @@
 import React from 'react'
-
+import { useApi } from '../../hooks/useApi';
 
 // has problems will fix in future
 
 const AdminDashboard = () => {
     const { courses, courseCount, fetchCourses } = useCourseContext()
-    const { api } = useAuth()
+    let api = useApi();
     const [file, setFile] = useState(null);
     const [quizzes, setQuizzes] = useState([]);
     const [error, setError] = useState([])

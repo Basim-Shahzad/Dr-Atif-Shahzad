@@ -5,7 +5,7 @@ import './index.css'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Courses from './Components/CoursesComponents/CoursesPage.jsx';
 import AdminPanel from './Components/AdminComponents/AdminPanel.jsx';
-import { AuthProvider } from './Components/AuthComponents/AuthContext.jsx';
+import { AuthProvider } from './Context/AuthContext.jsx';
 import Layout from './Components/Layout.jsx';
 import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
 import NCAAA_Page from './Components/NCAAA_Components/NCAAA_Page.jsx';

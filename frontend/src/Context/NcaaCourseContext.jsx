@@ -4,7 +4,8 @@ import React, {
     useState,
     useCallback,
 } from "react";
-import { useAuth } from "../Components/AuthComponents/AuthContext";
+import { useAuth } from "../hooks/useAuth";
+import { useApi } from "../hooks/useApi";
 
 const NcaaaCoursesContext = createContext();
 
@@ -19,7 +20,8 @@ export const NcaaaCoursesContextProvider = ({ children }) => {
     const [ncaaaCoursesCount, setNcaaaCoursesCount] = useState(0);
     const [ncaaaCoursesFetchError, setNcaaaCoursesFetchError] = useState('');
     const [ncaaaCoursesAddError, setNcaaaCoursesAddError] = useState('');
-    const { api, csrfToken, fetchCsrfToken } = useAuth();
+    const { csrfToken, fetchCsrfToken } = useAuth();
+    let api = useApi();
 
     const fetchNcaaaCourses = useCallback(async () => {
         try {

@@ -1,68 +1,53 @@
-#!/usr/bin/env python3
 import os
 import sys
 import logging
 from logging.handlers import RotatingFileHandler
+from dotenv import load_dotenv
 
-# Add the current directory to Python path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Base directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, BASE_DIR)
 
-# Set up logging
+# Load environment variables
+FLASK_ENV = os.getenv("FLASK_ENV", "development")
+load_dotenv(os.path.join(BASE_DIR, f".env.{FLASK_ENV}"))
+
+# Logging setup
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Create logs directory if it doesn't exist
-log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
+log_dir = os.path.join(BASE_DIR, "logs")
 os.makedirs(log_dir, exist_ok=True)
 
-# Set up file handler
 file_handler = RotatingFileHandler(
-    os.path.join(log_dir, 'app.log'),
-    maxBytes=10240000,  # 10MB
+    os.path.join(log_dir, "app.log"),
+    maxBytes=10_240_000,
     backupCount=5
 )
 file_handler.setFormatter(logging.Formatter(
-    '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    "%(asctime)s %(levelname)s: %(message)s"
 ))
-file_handler.setLevel(logging.INFO)
 logger.addHandler(file_handler)
 
-logger.info('Starting Flask application...')
+logger.info(f"Starting Flask app ({FLASK_ENV})")
 
-try:
-    from app import create_app, db
-    logger.info('Successfully imported Flask app')
-except Exception as e:
-    logger.error(f'Failed to import Flask app: {e}')
-    raise
+# Create app
+from app import create_app, db
+app = create_app()
 
-# Create the Flask application instance
-try:
-    app = create_app()
-    logger.info('Flask app created successfully')
-except Exception as e:
-    logger.error(f'Failed to create Flask app: {e}')
-    raise
-
-# Create tables if they don't exist (for initial setup)
-with app.app_context():
-    try:
+# Create DB tables ONLY in development
+if FLASK_ENV == "development":
+    with app.app_context():
         db.create_all()
-        logger.info("Database tables created successfully")
-        print("Database tables created successfully")
-    except Exception as e:
-        logger.error(f"Error creating database tables: {e}")
-        print(f"Error creating database tables: {e}")
+        logger.info("Development database ready")
 
-# This is what most WSGI servers will look for
+# WSGI entry point
 application = app
 
-# Add some debugging info
-logger.info(f'Python version: {sys.version}')
-logger.info(f'Current working directory: {os.getcwd()}')
-logger.info(f'Python path: {sys.path}')
-logger.info('Application is ready to serve requests')
-
-if __name__ == '__main__':
-    logger.info('Running in development mode')
-    app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+# Development server only
+if __name__ == "__main__":
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5000)),
+        debug=(FLASK_ENV == "development")
+    )

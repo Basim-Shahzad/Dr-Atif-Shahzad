@@ -1,11 +1,11 @@
 import React from 'react'
 import axios from 'axios'
-import { useAuth } from '../AuthComponents/AuthContext'
+import { useApi } from '../../hooks/useApi'
 import { useResearchContext } from '../../Context/ResearchContext'
 import { useContext, useEffect, useState } from 'react'
 
 const AboutPage = () => {
-    let { api } = useAuth();
+    let api = useApi();
     const { fetchResearches, researches } = useResearchContext();
 
     useEffect(() => {

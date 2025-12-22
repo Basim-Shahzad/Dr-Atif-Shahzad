@@ -7,7 +7,8 @@ import React, {
     useCallback,
 } from "react";
 import axios from "axios";
-import { useAuth } from "../Components/AuthComponents/AuthContext";
+import { useAuth } from "../hooks/useAuth";
+import { useApi } from "../hooks/useApi";
 
 const CoursesContext = createContext();
 
@@ -20,7 +21,7 @@ export const useCourseContext = () => {
 export const CourseContextProvider = ({ children }) => {
     const [courses, setCourses] = useState([])
     const [coursesCount, setCoursesCount] = useState(0)
-    const { api } = useAuth()
+    let api = useApi();
 
     const fetchCourses = useCallback(async () => {
         try {

@@ -7,7 +7,8 @@ import React, {
     useCallback,
 } from "react";
 import axios from "axios";
-import { useAuth } from "../Components/AuthComponents/AuthContext";
+import { useAuth } from "../hooks/useAuth";
+import { useApi } from "../hooks/useApi";
 
 const ResearchContext = createContext();
 
@@ -19,7 +20,7 @@ export const useResearchContext = () => {
 
 export const ResearchContextProvider = ({ children }) => {
     const [researches, setResearches] = useState([])
-    const { api } = useAuth()
+    let api = useApi();
 
     const fetchResearches = useCallback(async () => {
         try {

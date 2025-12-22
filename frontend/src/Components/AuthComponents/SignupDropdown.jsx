@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useAuth } from '../AuthComponents/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 
 const SignupDropdown = (props) => {
     const [passwordError, setPasswordError] = useState('');

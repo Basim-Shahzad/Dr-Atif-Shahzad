@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useAuth } from '../AuthComponents/AuthContext';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { useCourseContext } from '../../Context/CourseContext';

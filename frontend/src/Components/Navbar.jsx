@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import LoginDropdown from '../Components/AuthComponents/LoginDropdown';
 import SignupDropdown from '../Components/AuthComponents/SignupDropdown';
-import { useAuth } from '../Components/AuthComponents/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { Sidebar } from 'primereact/sidebar';
 import { IoReorderThreeOutline } from "react-icons/io5";
