@@ -5,7 +5,7 @@ export const useApi = () => {
    // Get API base URL from environment variables
    const API_BASE = import.meta.env.VITE_API_BASE || "/api";
    const isDevelopment = import.meta.env.VITE_ENV === "development" || import.meta.env.DEV;
-
+   
    // Axios instance with credentials and CSRF protection
    const api = useMemo(() => {
       const instance = axios.create({
@@ -16,8 +16,8 @@ export const useApi = () => {
       });
 
       // CSRF token handling via cookies
-      instance.defaults.xsrfCookieName = "XSRF-TOKEN";
-      instance.defaults.xsrfHeaderName = "X-XSRF-TOKEN";
+      instance.defaults.xsrfCookieName = "csrf_access_token";
+      instance.defaults.xsrfHeaderName = "X-CSRF-TOKEN";
 
       // Log requests in development mode
       if (isDevelopment && import.meta.env.VITE_DEBUG === "true") {

@@ -1,82 +1,31 @@
-import React, {
-    createContext,
-    useContext,
-    useState,
-    useCallback,
-} from "react";
-import { useAuth } from "../hooks/useAuth";
+import React, { createContext, useContext } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useApi } from "../hooks/useApi";
 
-const NcaaaCoursesContext = createContext();
-
-export const useNcaaCourseContext = () => {
-    const context = useContext(NcaaaCoursesContext);
-    if (!context) throw new Error("useNcaaCourseContext must be used within NcaaaCoursesContextProvider");
-    return context;
-};
+export const NcaaaCoursesContext = createContext();
 
 export const NcaaaCoursesContextProvider = ({ children }) => {
-    const [ncaaaCourses, setNcaaaCourses] = useState([]);
-    const [ncaaaCoursesCount, setNcaaaCoursesCount] = useState(0);
-    const [ncaaaCoursesFetchError, setNcaaaCoursesFetchError] = useState('');
-    const [ncaaaCoursesAddError, setNcaaaCoursesAddError] = useState('');
-    const { csrfToken, fetchCsrfToken } = useAuth();
-    let api = useApi();
+   const api = useApi();
 
-    const fetchNcaaaCourses = useCallback(async () => {
-        try {
-            const response = await api.get("/admin/ncaaa/get-courses");
-            if (response.data.success) {
-                setNcaaaCourses(response.data.courses);
-                setNcaaaCoursesCount(response.data.total);
-            } else {
-                setNcaaaCoursesFetchError(response.data.error);
-                console.error(response.data.error);
-            }
-        } catch (err) {
-            setNcaaaCoursesFetchError('Error fetching courses: ' + (err?.message || err));
-            console.error('Error fetching courses:', err);
-        }
-    }, [api]);
+   const fetchNcaaCourses = async () => {
+      const response = await api.get("/ncaaa");
+      if (response.data.success) {
+         return response.data.courses;
+      } else {
+         throw new Error(response.data.error || "Failed to fetch courses");
+      }
+   };
 
-    const addNcaaaCourse = async (ncaaaCourse) => {
-        try {
-            // Always refresh token immediately before making a modifying request.
-            const token = await fetchCsrfToken();
-            if (!token && !csrfToken) {
-                throw new Error("Missing CSRF token; cannot submit");
-            }
+   const { isLoading, data, error } = useQuery({
+      queryKey: ["ncaaa"],
+      queryFn: fetchNcaaCourses,
+   });
 
-            // rely on api.defaults.headers.common that fetchCsrfToken set — avoid ad-hoc header mismatch
-            const response = await api.post("/admin/ncaaa/add-course", {
-                ncaaa_course_code: ncaaaCourse.courseCode,
-                ncaaa_course_name: ncaaaCourse.courseName,
-                ncaaa_course_description: ncaaaCourse.courseDescription
-            });
+   const value = {
+      ncaaCourses: data,
+      isLoading,
+      error,
+   };
 
-            if (response.data.success) {
-                await fetchNcaaaCourses();
-            } else {
-                setNcaaaCoursesAddError(response.data.error);
-                console.error(response.data.error);
-            }
-        } catch (err) {
-            const message = err?.response?.data?.msg || err?.response?.data?.error || err?.message || "Error adding course";
-            setNcaaaCoursesAddError(message);
-            console.error('Error adding course:', err, 'message:', message);
-        }
-    };
-
-    const value = {
-        ncaaaCourses,
-        ncaaaCoursesCount,
-        ncaaaCoursesAddError,
-        ncaaaCoursesFetchError,
-        fetchNcaaaCourses,
-        addNcaaaCourse,
-    };
-
-    return (
-        <NcaaaCoursesContext.Provider value={value}>{children}</NcaaaCoursesContext.Provider>
-    );
+   return <NcaaaCoursesContext.Provider value={value}>{children}</NcaaaCoursesContext.Provider>;
 };
