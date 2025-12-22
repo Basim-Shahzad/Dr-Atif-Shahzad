@@ -34,8 +34,8 @@ def get_csrf_token():
         "XSRF-TOKEN",
         token,
         domain=".dratifshahzad.com",
-        secure=True,            # requires HTTPS in prod
-        httponly=False,         # client JS must be able to read it if you rely on reading cookie
+        secure=True,
+        httponly=False,
         samesite="None",
         max_age=3600,
     )
@@ -76,7 +76,7 @@ def register():
         
         access_token = create_access_token(
             identity=str(user.uid), 
-            additional_claims={"role": user.role}
+            additional_claims={"role": user.role.value}
         )
         refresh_token = create_refresh_token(
             identity=str(user.uid)
@@ -121,7 +121,7 @@ def login():
 
         access_token = create_access_token(
             identity=str(user.uid),
-            additional_claims={"role": user.role}
+            additional_claims={"role": user.role.value}
         )
         refresh_token = create_refresh_token(identity=str(user.uid))
 
@@ -163,7 +163,7 @@ def refresh():
 
         new_access_token = create_access_token(
             identity=str(user.uid),
-            additional_claims={"role": user.role}
+            additional_claims={"role": user.role.value}
         )
 
         new_refresh_token = create_refresh_token(identity=str(user.uid))
