@@ -25,7 +25,6 @@ def validate_password(password):
         return False
     return True
 
-
 @auth_bp.route('/csrf-token', methods=['GET'])
 def get_csrf_token():
     token = generate_csrf()
