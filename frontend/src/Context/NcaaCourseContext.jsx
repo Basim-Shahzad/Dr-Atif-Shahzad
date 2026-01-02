@@ -1,11 +1,13 @@
 import React, { createContext, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "../hooks/useApi";
+import { useAuth } from "../hooks/useAuth";
 
 export const NcaaaCoursesContext = createContext();
 
 export const NcaaaCoursesContextProvider = ({ children }) => {
    const api = useApi();
+   const { isInitialized } = useAuth();
 
    const fetchNcaaCourses = async () => {
       const response = await api.get("/ncaaa");
@@ -19,10 +21,11 @@ export const NcaaaCoursesContextProvider = ({ children }) => {
    const { isLoading, data, error } = useQuery({
       queryKey: ["ncaaa"],
       queryFn: fetchNcaaCourses,
+      enabled: isInitialized, // only fetch after auth initializes
    });
 
    const value = {
-      ncaaCourses: data,
+      ncaaCourses: data || [],
       isLoading,
       error,
    };

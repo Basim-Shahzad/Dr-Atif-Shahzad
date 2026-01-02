@@ -13,6 +13,14 @@ HEADERS = {"Accept": "application/json"}
 
 about_bp = Blueprint('about', __name__)
 
+def safe_get(d, *keys):
+    """Safely get nested keys from a dict."""
+    for key in keys:
+        if d is None:
+            return None
+        d = d.get(key)
+    return d
+
 @about_bp.route("/orcid/researches", methods=["GET"])
 def get_works():
     url = f"{BASE_URL}/works"
@@ -20,42 +28,45 @@ def get_works():
 
     if response.status_code != 200:
         return jsonify({
-            "success" : False,
+            "success": False,
             "error": "Failed to fetch researches",
             "status": response.status_code,
-            })
+        })
 
     data = response.json()
-
-    # Extract useful info
     works = []
+
     for group in data.get("group", []):
-        summary = group["work-summary"][0]
+        summary = group.get("work-summary", [{}])[0]  # fallback empty dict
+
         works.append({
-            "title": summary["title"]["title"]["value"],
-            "type": summary["type"],
-            "put-code": summary["put-code"],
-            "year": summary.get("publication-date", {}).get("year", {}).get("value"),
-            "journal": summary.get("journal-title", {}).get("value"),
+            "put_code": summary.get("put-code"),
+            "title": safe_get(summary, "title", "title", "value") or "No title",
+            "type": summary.get("type") or "Unknown",
+            "year": safe_get(summary, "publication-date", "year", "value"),
+            "journal": safe_get(summary, "journal-title", "value"),
             "doi": next(
-                (id["value"] for id in summary.get("external-ids", {}).get("external-id", [])
-                 if id["external-id-type"] == "doi"),
+                (
+                    ext.get("external-id-value")
+                    for ext in safe_get(summary, "external-ids", "external-id") or []
+                    if ext.get("external-id-type") == "doi"
+                ),
                 None
-            )
+            ),
+            "url": safe_get(summary, "url", "value")
         })
 
-    return jsonify(
-        {
-            "success" : True,
-            "researches" : works,
-        })
+    return jsonify({
+        "success": True,
+        "researches": works,
+    })
 
-@about_bp.route("/orcid/researche/<put_code>", methods=["GET"])
+@about_bp.route("/orcid/researches/<put_code>", methods=["GET"])
 def get_single_work(put_code):
     url = f"{BASE_URL}/work/{put_code}"
     response = requests.get(url, headers=HEADERS)
 
     if response.status_code != 200:
         return jsonify({"error": "Failed to fetch work", "status": response.status_code})
-
+    
     return jsonify(response.json())

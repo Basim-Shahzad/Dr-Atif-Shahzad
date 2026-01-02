@@ -1,47 +1,36 @@
-import React, {
-    createContext,
-    useContext,
-    useState,
-    useEffect,
-    useMemo,
-    useCallback,
-} from "react";
-import axios from "axios";
-import { useAuth } from "../hooks/useAuth";
+import { createContext } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useApi } from "../hooks/useApi";
+import { useAuth } from "../hooks/useAuth";
 
-const ResearchContext = createContext();
-
-export const useResearchContext = () => {
-    const context = useContext(ResearchContext);
-    if (!context) throw new Error("useResearchContext must be used within ResearchContextProvider");
-    return context;
-};
+export const ResearchContext = createContext();
 
 export const ResearchContextProvider = ({ children }) => {
-    const [researches, setResearches] = useState([])
-    let api = useApi();
+   let api = useApi();
+   const { isInitialized } = useAuth();
 
-    const fetchResearches = useCallback(async () => {
-        try {
-            const response = await api.get("/orcid/researches")
-            if (response.data.success) {
-                setResearches(response.data.researches);
-            } else {
-                console.error(response.data.error)
-            }
-        } catch (err) {
-            console.error('Error fetching courses:', err);
-        }
-    }, [api])
+   const fetchResearches = async () => {
+      const response = await api.get("/orcid/researches");
+      if (response.data.success) {
+         console.log(response.data.researches)
+         return response.data.researches;
+      } else {
+         console.error(response.data.error);
+      }
+   };
 
-    const value = {
-        researches,
-        fetchResearches,
-    };
+   const { isLoading, data, error } = useQuery({
+      queryKey: ["researches"],
+      queryFn: fetchResearches,
+      enabled: isInitialized,
+   });
 
-    return (
-        <ResearchContext.Provider value={value}>{children}</ResearchContext.Provider>
-    )
 
-}
+   const value = {
+      researches: data ?? [],
+      isLoading,
+      error,
+   };
+
+   return <ResearchContext.Provider value={value}>{children}</ResearchContext.Provider>;
+};

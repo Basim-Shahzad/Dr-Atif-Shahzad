@@ -51,19 +51,17 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")).render(
-   <StrictMode>
-      <PrimeReactProvider>
-         <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-               <NcaaaCoursesContextProvider>
-                  <CourseContextProvider>
-                     <ResearchContextProvider>
-                        <RouterProvider router={router} />
-                     </ResearchContextProvider>
-                  </CourseContextProvider>
-               </NcaaaCoursesContextProvider>
-            </AuthProvider>
-         </QueryClientProvider>
-      </PrimeReactProvider>
-   </StrictMode>
+   <PrimeReactProvider>
+      <QueryClientProvider client={queryClient}>
+         <AuthProvider>
+            <NcaaaCoursesContextProvider>
+               <CourseContextProvider>
+                  <ResearchContextProvider>
+                     <RouterProvider router={router} />
+                  </ResearchContextProvider>
+               </CourseContextProvider>
+            </NcaaaCoursesContextProvider>
+         </AuthProvider>
+      </QueryClientProvider>
+   </PrimeReactProvider>
 );

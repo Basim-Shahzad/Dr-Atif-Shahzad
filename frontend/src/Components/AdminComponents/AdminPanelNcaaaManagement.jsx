@@ -11,7 +11,7 @@ const AdminPanelNcaaaManagement = () => {
 
     return (
         <div className='sm:ml-64 border-t-4 border-green-700'>
-
+            
         </div>
     )
 }
