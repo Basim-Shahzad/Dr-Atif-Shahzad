@@ -39,7 +39,7 @@ const LoginDropdown = (props) => {
          <h2 className="mt-2 text-center text-xl font-bold tracking-tight z-50">Sign in to your account</h2>
 
          <div className="mt-6 w-full z-50">
-            <form className="space-y-5" onSubmit={handleSubmit} >
+            <form className="space-y-5" onSubmit={handleSubmit}>
                <div>
                   <label htmlFor="email" className="block text-sm font-medium mb-2">
                      Email address
@@ -111,8 +111,10 @@ const LoginDropdown = (props) => {
                Not a member?
                <button
                   className="font-semibold text-green-700 hover:text-green-800 transition-colors duration-200 hover:underline cursor-pointer bg-transparent border-none p-0"
-                  onClick={() => props.inverseDropdownshow()}
-                  >
+                  onClick={() => {
+                     e.stopPropagation();
+                     props.inverseDropdownshow();
+                  }}>
                   Create an Account
                </button>
             </p>
