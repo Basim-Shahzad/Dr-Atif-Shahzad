@@ -61,9 +61,8 @@ def validate_password(password):
     
 #     return response
 
-# @limiter.limit("10 per hour")
-
 @auth_bp.route('/register', methods=['POST'])
+@limiter.limit("10 per hour")
 def register():
     try:
         data = request.get_json()
