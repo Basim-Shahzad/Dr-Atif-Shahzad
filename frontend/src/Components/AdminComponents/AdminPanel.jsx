@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button } from 'primereact/button';
-import { Dialog } from 'primereact/dialog';
 import { useCourseContext } from '../../Context/CourseContext';
 import { Link, Outlet } from 'react-router';
 

@@ -4,9 +4,7 @@ import LoginDropdown from "../Components/AuthComponents/LoginDropdown";
 import SignupDropdown from "../Components/AuthComponents/SignupDropdown";
 import { useAuth } from "../hooks/useAuth";
 import { Link } from "react-router-dom";
-import { Sidebar } from "primereact/sidebar";
 import { IoReorderThreeOutline } from "react-icons/io5";
-import { Button } from "primereact/button";
 import { IoCloseSharp } from "react-icons/io5";
 
 const Navbar = () => {
@@ -114,21 +112,22 @@ const Navbar = () => {
    return (
       <nav className="NAVBAR w-full min-w-full grid justify-between items-center sticky top-0 p-3 bg-green-100 z-50 grid-cols-3 max-sm:grid-cols-2 grid-rows-1 max-[770px]:grid-cols-2">
          <div className="togglebtn lg:hidden flex justify-start max-sm:col-start-1 max-sm:row-start-1 max-[770px]:col-start-1 max-[770px]:row-start-1 ">
-            <Button
+            {/* <Button
                onClick={() => {
                   setVisible(true);
                   SetshowSidebar(!showSidebar);
                }}
                icon="pi pi-arrow-right">
                <IoReorderThreeOutline className="text-3xl hover:bg-black col-start-1" />
-            </Button>
+            </Button> 
+            */}
          </div>
 
          <div className="text-2xl font-extrabold flex justify-center text-green-700 col-start-1 max-[321px]:text-xs max-sm:col-start-1 max-sm:row-start-1 max-sm:ml-8 max-[380px]:text-base max-[430px]:text-lg max-[770px]:text-2xl max-[770px]:row-start-1">
             <h1 className="select-none">Dr. Atif Shahzad</h1>
          </div>
 
-         <Sidebar
+         {/* <Sidebar
             visible={visible}
             onHide={() => setVisible(false)}
             className="bg-green-200 max-w-1/2 md:max-w-1/4"
@@ -140,11 +139,11 @@ const Navbar = () => {
                         Home
                      </li>
                   </Link>
-                  {/* <Link to={"/courses"}>
+                  <Link to={"/courses"}>
                      <li className="text-green-600 cursor-pointer hover:text-green-800 font-semibold hover:underline transition-colors duration-200">
                         Courses
                      </li>
-                  </Link> */}
+                  </Link>
                   <Link to={"/ncaaa"}>
                      <li className="text-green-600 cursor-pointer hover:text-green-800 font-semibold hover:underline transition-colors duration-200">
                         NCAAA
@@ -164,7 +163,7 @@ const Navbar = () => {
                   </Link>
                </ul>
             </div>
-         </Sidebar>
+         </Sidebar> */}
 
          <div className="navbar-left flex items-center list-none justify-center gap-16 col-start-2 max-[770px]:hidden">
             <ul className="flex gap-9 items-center justify-center">
@@ -173,11 +172,6 @@ const Navbar = () => {
                      Home
                   </li>
                </Link>
-               {/* <Link to={"/courses"}>
-                  <li className="text-green-600 cursor-pointer hover:text-green-800 font-semibold hover:underline transition-colors duration-200">
-                     Courses
-                  </li>
-               </Link> */}
                <Link
                   to={"/ncaaa"}
                   className="text-green-600 cursor-pointer hover:text-green-800 font-semibold hover:underline transition-colors duration-200">
@@ -190,6 +184,11 @@ const Navbar = () => {
                      </li>
                   </Link>
                )}
+               {/* <Link to={"/surveys"}>
+                  <li className="text-green-600 cursor-pointer hover:text-green-800 font-semibold hover:underline transition-colors duration-200">
+                     Surveys
+                  </li>
+               </Link> */}
                <Link
                   to={"/about"}
                   className="text-green-600 cursor-pointer hover:text-green-800 font-semibold hover:underline transition-colors duration-200">

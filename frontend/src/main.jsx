@@ -7,7 +7,6 @@ import Courses from "./Components/CoursesComponents/CoursesPage.jsx";
 import AdminPanel from "./Components/AdminComponents/AdminPanel.jsx";
 import { AuthProvider } from "./Context/AuthContext.jsx";
 import Layout from "./Components/Layout.jsx";
-import { PrimeReactProvider, PrimeReactContext } from "primereact/api";
 import NCAAA_Page from "./Components/NCAAA_Components/NCAAA_Page.jsx";
 import Course from "./Components/CoursesComponents/Course.jsx";
 import ProtectedRoute from "./Components/ProtectedRoute.jsx";
@@ -20,6 +19,7 @@ import FaculityMembersManagement from "./Components/AdminComponents/FaculityMemb
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AdminDashboard from "./Components/AdminComponents/AdminDashboard.jsx";
 import NcaaaDetailPage from "./Components/ncaaaDetailComponents/NcaaaDetailPage.jsx";
+import SurveysPage from "./Components/SurveyComponents/SurveysPage.jsx";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +44,7 @@ const router = createBrowserRouter([
                </ProtectedRoute>
             ),
          },
+         { path: "surveys", element: <SurveysPage /> },
          { path: "ncaaa", element: <NCAAA_Page /> },
          { path: "ncaaa/:course_code", element: <NcaaaDetailPage /> },
          { path: "course/:course_code", element: <Course /> },
@@ -53,17 +54,15 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")).render(
-   <PrimeReactProvider>
-      <QueryClientProvider client={queryClient}>
-         <AuthProvider>
-            <NcaaaCoursesContextProvider>
-               <CourseContextProvider>
-                  <ResearchContextProvider>
-                     <RouterProvider router={router} />
-                  </ResearchContextProvider>
-               </CourseContextProvider>
-            </NcaaaCoursesContextProvider>
-         </AuthProvider>
-      </QueryClientProvider>
-   </PrimeReactProvider>
+   <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+         <NcaaaCoursesContextProvider>
+            <CourseContextProvider>
+               <ResearchContextProvider>
+                  <RouterProvider router={router} />
+               </ResearchContextProvider>
+            </CourseContextProvider>
+         </NcaaaCoursesContextProvider>
+      </AuthProvider>
+   </QueryClientProvider>
 );

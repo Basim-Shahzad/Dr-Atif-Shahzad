@@ -1,128 +1,148 @@
-import React, { useState, useRef } from "react";
-import { FileUpload } from "primereact/fileupload";
+import React, { useState } from "react";
 import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
-import { Toast } from "primereact/toast";
 import Papa from "papaparse";
-import "primereact/resources/themes/lara-light-cyan/theme.css";
-import "primereact/resources/primereact.min.css";
-import { InputTextarea } from "primereact/inputtextarea";
-import { FloatLabel } from "primereact/floatlabel";
+import { FaFileUpload } from "react-icons/fa";
+
+/* -------------------- CONSTANTS -------------------- */
+
+const INITIAL_DATA = [
+   {
+      id: "students",
+      label: "Number of Students",
+      aPlus: "",
+      a: "",
+      bPlus: "",
+      b: "",
+      cPlus: "",
+      c: "",
+      dPlus: "",
+      d: "",
+      f: "",
+      denied: "",
+      inProgress: "",
+      incomplete: "",
+      pass: "",
+      fail: "",
+      withdrawn: "",
+   },
+   {
+      id: "percentage",
+      label: "Percentage",
+      aPlus: "",
+      a: "",
+      bPlus: "",
+      b: "",
+      cPlus: "",
+      c: "",
+      dPlus: "",
+      d: "",
+      f: "",
+      denied: "",
+      inProgress: "",
+      incomplete: "",
+      pass: "",
+      fail: "",
+      withdrawn: "",
+   },
+];
+
+const REQUIRED_HEADERS = [
+   "Field",
+   "Ap",
+   "A",
+   "Bp",
+   "B",
+   "Cp",
+   "C",
+   "Dp",
+   "D",
+   "F",
+   "DN",
+   "IP",
+   "IC",
+   "Pass",
+   "Fail",
+   "W",
+];
+
+const REQUIRED_ROWS = ["Number of Students", "Percentage"];
 
 const NcaaaStudentResults = () => {
-   const toast = useRef(null);
-   const [ comment, setComment ] = useState()
+   const [data, setData] = useState(INITIAL_DATA);
+   const [comment, setComment] = useState("");
 
-   // Initial table data
-   const [data, setData] = useState([
-      {
-         id: "students",
-         label: "Number of Students",
-         aPlus: "",
-         a: "",
-         bPlus: "",
-         b: "",
-         cPlus: "",
-         c: "",
-         dPlus: "",
-         d: "",
-         f: "",
-         denied: "",
-         inProgress: "",
-         incomplete: "",
-         pass: "",
-         fail: "",
-         withdrawn: "",
-      },
-      {
-         id: "percentage",
-         label: "Percentage",
-         aPlus: "",
-         a: "",
-         bPlus: "",
-         b: "",
-         cPlus: "",
-         c: "",
-         dPlus: "",
-         d: "",
-         f: "",
-         denied: "",
-         inProgress: "",
-         incomplete: "",
-         pass: "",
-         fail: "",
-         withdrawn: "",
-      },
-   ]);
-
-   // Update table cell
    const updateCell = (rowId, columnId, value) => {
       setData((prev) => prev.map((row) => (row.id === rowId ? { ...row, [columnId]: value } : row)));
    };
 
-   // Map CSV row to table row
-   const csvToTableKeys = (csvRow) => ({
-      id: csvRow.Field === "Number of Students" ? "students" : "percentage",
-      label: csvRow.Field,
-      aPlus: Number(csvRow.Ap || 0),
-      a: Number(csvRow.A || 0),
-      bPlus: Number(csvRow.Bp || 0),
-      b: Number(csvRow.B || 0),
-      cPlus: Number(csvRow.Cp || 0),
-      c: Number(csvRow.C || 0),
-      dPlus: Number(csvRow.Dp || 0),
-      d: Number(csvRow.D || 0),
-      f: Number(csvRow.F || 0),
-      denied: Number(csvRow.DN || 0),
-      inProgress: Number(csvRow.IP || 0),
-      incomplete: Number(csvRow.IC || 0),
-      pass: Number(csvRow.P || 0),
-      fail: Number(csvRow.F || 0),
-      withdrawn: Number(csvRow.W || 0),
+   /* -------------------- CSV VALIDATION -------------------- */
+
+   const validateCsv = (rows) => {
+      if (!rows || rows.length !== 2) throw new Error("CSV must contain exactly 2 rows.");
+
+      const headers = Object.keys(rows[0]);
+
+      if (headers.length !== REQUIRED_HEADERS.length) throw new Error("CSV contains extra or missing columns.");
+
+      REQUIRED_HEADERS.forEach((h) => {
+         if (!headers.includes(h)) throw new Error(`Missing column: ${h}`);
+      });
+
+      const fieldValues = rows.map((r) => r.Field);
+      REQUIRED_ROWS.forEach((r) => {
+         if (!fieldValues.includes(r)) throw new Error(`Missing required row: ${r}`);
+      });
+   };
+
+   /* -------------------- CSV MAPPING -------------------- */
+
+   const mapCsvRow = (row) => ({
+      id: row.Field === "Number of Students" ? "students" : "percentage",
+      label: row.Field,
+      aPlus: Number(row.Ap),
+      a: Number(row.A),
+      bPlus: Number(row.Bp),
+      b: Number(row.B),
+      cPlus: Number(row.Cp),
+      c: Number(row.C),
+      dPlus: Number(row.Dp),
+      d: Number(row.D),
+      f: Number(row.F),
+      denied: Number(row.DN),
+      inProgress: Number(row.IP),
+      incomplete: Number(row.IC),
+      pass: Number(row.Pass),
+      fail: Number(row.Fail),
+      withdrawn: Number(row.W),
    });
 
-   // Handle CSV upload
-   const handleCsvUpload = (event) => {
-      const file = event.files[0];
+   /* -------------------- CSV UPLOAD -------------------- */
+
+   const handleCsvUpload = (e) => {
+      const file = e.target.files[0];
       if (!file) return;
 
       Papa.parse(file, {
          header: true,
          skipEmptyLines: true,
-         complete: (results) => {
-            const parsedData = results.data;
-
-            if (!parsedData || parsedData.length === 0) {
-               toast.current.show({
-                  severity: "warn",
-                  summary: "CSV Upload",
-                  detail: "CSV file is empty or invalid.",
-               });
-               return;
+         complete: ({ data: rows }) => {
+            try {
+               validateCsv(rows);
+               setData(rows.map(mapCsvRow));
+               alert("CSV loaded successfully.");
+            } catch (err) {
+               alert(err.message);
             }
-
-            const tableData = parsedData.map(csvToTableKeys);
-            setData(tableData);
-
-            toast.current.show({
-               severity: "success",
-               summary: "CSV Upload",
-               detail: "Data successfully loaded!",
-            });
          },
-         error: (err) => {
-            toast.current.show({
-               severity: "error",
-               summary: "CSV Upload Error",
-               detail: err.message,
-            });
-         },
+         error: (err) => alert(err.message),
       });
    };
 
-   // Table columns
+   /* -------------------- TABLE -------------------- */
+
    const columns = [
       {
-         header: "Grades",
+         header: "-",
          columns: [
             {
                accessorKey: "label",
@@ -166,19 +186,17 @@ const NcaaaStudentResults = () => {
 
    return (
       <>
-         <div className="max-w-full overflow-x-auto">
-            <table className="w-full border-collapse bg-white shadow-lg">
+         <div className="max-w-min overflow-x-auto">
+            <table>
                <thead>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                     <tr key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => (
+                  {table.getHeaderGroups().map((hg) => (
+                     <tr key={hg.id}>
+                        {hg.headers.map((h) => (
                            <th
-                              key={header.id}
-                              colSpan={header.colSpan}
-                              className="bg-indigo-700 text-white px-3 py-3 text-sm font-semibold border border-indigo-600">
-                              {header.isPlaceholder
-                                 ? null
-                                 : flexRender(header.column.columnDef.header, header.getContext())}
+                              key={h.id}
+                              colSpan={h.colSpan}
+                              className="bg-green-700 text-white px-4 py-3 text-sm font-semibold border border-black/20">
+                              {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
                            </th>
                         ))}
                      </tr>
@@ -186,18 +204,16 @@ const NcaaaStudentResults = () => {
                </thead>
                <tbody>
                   {table.getRowModel().rows.map((row) => (
-                     <tr key={row.id} className={row.original.id === "students" ? "bg-indigo-100" : "bg-indigo-50"}>
+                     <tr key={row.id} className="bg-green-200">
                         {row.getVisibleCells().map((cell) => (
-                           <td key={cell.id} className="border border-gray-300">
+                           <td key={cell.id} className="border border-black/20">
                               {cell.column.id === "label" ? (
                                  flexRender(cell.column.columnDef.cell, cell.getContext())
                               ) : (
                                  <input
-                                    type="text"
                                     value={cell.getValue()}
                                     onChange={(e) => updateCell(row.original.id, cell.column.id, e.target.value)}
-                                    className="w-full px-3 py-2 bg-transparent focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                    placeholder=""
+                                    className="w-full px-2 py-3 focus:outline-none focus:ring-2 focus:ring-green-800"
                                  />
                               )}
                            </td>
@@ -208,36 +224,49 @@ const NcaaaStudentResults = () => {
             </table>
          </div>
 
-         <div className="mt-6 flex flex-col sm:flex-row gap-4">
-            <Toast ref={toast}></Toast>
-            <FileUpload
-               mode="basic"
-               name="file"
-               accept=".csv"
-               maxFileSize={3000000}
-               onSelect={handleCsvUpload}
-               chooseLabel="Upload CSV"
+         <div className="flex my-4 gap-4">
+            <input
+               className="min-w-[300px] resize  max-w-[300px] min-h-fulle max-h-full border border-emerald-800 rounded-xl px-4 py-3"
+               value={comment}
+               onChange={(e) => setComment(e.target.value)}
+               placeholder="Comments"
             />
-            <button
-               onClick={() => console.log("Current data:", data)}
-               className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition-colors">
-               Log Data to Console
-            </button>
+
+            <div className="flex gap-4">
+               <label className="flex items-center gap-3 px-4 py-3 bg-emerald-950 border border-emerald-800 rounded-lg cursor-pointer">
+                  <FaFileUpload className="text-emerald-500 text-xl" />
+                  <span className="text-emerald-100 font-medium">Upload CSV File</span>
+                  <input type="file" accept=".csv" hidden onChange={handleCsvUpload} />
+               </label>
+            </div>
          </div>
 
-         <div className="mt-8" >
-            <FloatLabel>
-               <InputTextarea
-                  id="comments"
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  className=""
-                  rows={4}
-                  cols={40}
-               />
-               <label htmlFor="comments">Comments</label>
-            </FloatLabel>
-         </div>
+         <button
+            type="button"
+            onClick={() => {
+               console.log("Submitted Table Data:", data);
+               console.log("Submitted Comments:", comment);
+            }}
+            className="
+                        mt-8 cursor-pointer w-full max-w-xs
+                        flex items-center justify-center gap-2
+                        bg-green-700 text-white font-bold uppercase tracking-widest
+                        px-8 py-3 rounded-lg
+                        border-b-4 border-green-900
+                        hover:bg-green-600
+                        active:border-b-0 active:translate-y-1
+                        transition-all duration-100
+                        shadow-md
+                     ">
+            Submit Data
+            <svg
+               className="w-5 h-5 transition-transform group-hover:translate-x-1"
+               fill="none"
+               viewBox="0 0 24 24"
+               stroke="currentColor">
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+         </button>
       </>
    );
 };
