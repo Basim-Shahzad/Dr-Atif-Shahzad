@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
 from app.models.Course import Course
-from app.models.User import User
+from app.models.User import User, UserRole
 from app.models.Quiz import Quiz
 from app.models.QuizMark import QuizMark
 from app.services.utils import admin_required
@@ -82,3 +82,24 @@ def upload_csv(course_id):
     db.session.commit()
     return {"message": "CSV uploaded successfully"}
 
+
+# Main Admin Page Routes
+
+@admin_bp.route("/admin/faculty-members")
+@admin_required
+def get_faculty_members():
+    try:
+        faculty_members = User.query.filter_by(role=UserRole.FACULTY).all()
+
+        return jsonify({
+            'success': True,
+            'faculty_members': faculty_members,
+            'total': len(faculty_members)
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500

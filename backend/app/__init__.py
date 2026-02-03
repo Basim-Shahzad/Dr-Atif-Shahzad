@@ -28,17 +28,11 @@ def create_app():
         JWT_SECRET_KEY=os.environ["JWT_SECRET_KEY"],
 
         JWT_TOKEN_LOCATION=["cookies"],
-        JWT_COOKIE_CSRF_PROTECT=True,
+        JWT_COOKIE_CSRF_PROTECT=False,
         JWT_CSRF_IN_COOKIES=True,
 
         JWT_ACCESS_COOKIE_NAME="access_token_cookie",
         JWT_REFRESH_COOKIE_NAME="refresh_token_cookie",
-
-        JWT_ACCESS_CSRF_COOKIE_NAME="csrf_access_token",
-        JWT_REFRESH_CSRF_COOKIE_NAME="csrf_refresh_token",
-
-        JWT_ACCESS_CSRF_HEADER_NAME="X-CSRF-TOKEN",
-        JWT_REFRESH_CSRF_HEADER_NAME="X-CSRF-TOKEN",
 
         JWT_ACCESS_TOKEN_EXPIRES=timedelta(minutes=30),
         JWT_REFRESH_TOKEN_EXPIRES=timedelta(days=7),
