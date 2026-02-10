@@ -12,4 +12,3 @@ class QuizMark(db.Model):
 
     student = db.relationship("User", back_populates="quiz_marks")
     quiz = db.relationship("Quiz", back_populates="marks")
-
