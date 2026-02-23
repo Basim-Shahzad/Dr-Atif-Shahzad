@@ -29,8 +29,12 @@ DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
 if APP_ENV == "development":
     ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
-
-ALLOWED_HOSTS = ['dratifshahzad.com']
+else:
+    ALLOWED_HOSTS = [
+        'api.dratifshahzad.com', 
+        'dratifshahzad.com',
+        'www.api.dratifshahzad.com'
+    ]
 
 
 # Security settings for production
