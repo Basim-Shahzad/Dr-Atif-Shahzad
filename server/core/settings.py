@@ -14,9 +14,9 @@ else:
     load_dotenv(BASE_DIR / ".env")
 
 if APP_ENV == "development":
-    print("✅ Running in DEVELOPMENT mode")
+    print("Running in DEVELOPMENT mode")
 else:
-    print("🚀 Running in PRODUCTION mode")
+    print("Running in PRODUCTION mode")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
